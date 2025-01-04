@@ -97,20 +97,25 @@ for (var i = 0; i < img.length; i++) {
   });
 }
 
+
 gallery.addEventListener("click", imageClick);
+
 function imageClick(event) {
   event.preventDefault();
   const imageData = event.target;
+  if (imageData.tagName !== "IMG") return;
+
   const instance = basicLightbox.create(
     `<img width="1400" height="900" src="${imageData.dataset.source}">`
   );
-  if (imageData.tagName === "IMG") {
-    instance.show(
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") {
-          instance.close();
-        }
-      })
-    );
+
+  instance.show();
+  
+  function handleKeydown(event) {
+    if (event.key === "Escape") {
+      instance.close();
+      document.removeEventListener("keydown", handleKeydown);
+    }
   }
+  document.addEventListener("keydown", handleKeydown);
 }
