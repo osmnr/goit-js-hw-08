@@ -64,45 +64,37 @@ const images = [
   },
 ];
 
-// selecting the 'ul' and applying the necessary syles
 const gallery = document.querySelector(".gallery");
-gallery.style.listStyle = "none";
-gallery.style.display = "flex";
-gallery.style.flexWrap = "wrap";
-gallery.style.gap = "20px";
-gallery.style.maxWidth = "1128px";
 
-// looping for each image
-for (let i = 0; i < images.length; i++) {
-  // 'img' element created and styles applied
-  const img = document.createElement("img");
-  img.src = images[i].preview.substring(1, images[i].preview.length - 1);
-  img.bigsrc = images[i].original.substring(1, images[i].original.length - 1);
-  img.alt = images[i].description;
-  img.width = 360;
-  img.height = 200;
+const galleryMarkup = images.map(
+  ({ preview, original, description }) =>
+      `<li class="gallery-item">
+          <a class="gallery-link" href="${original.substring(
+            1,
+            original.length - 1
+          )}">
+            <img
+              class="gallery-image"
+              src="${preview.substring(1, preview.length - 1)}"
+              data-source="${original.substring(1, original.length - 1)}"
+              alt="${description}"
+            />
+          </a>
+        </li>`
+  ).join("");
 
-  // adding event listener to the 'img' to make the size bigger // 376 / 360 = 1.04
-  img.addEventListener("mouseenter", (event) => {
+gallery.innerHTML = galleryMarkup;
+
+const img = document.getElementsByTagName("IMG");
+for (var i = 0; i < img.length; i++) {
+  // adding event listener to the 'img' to make the size bigger when hovered
+  img[i].addEventListener("mouseenter", (event) => {
     event.target.style.transform = "scale(1.04)";
   });
   //  adding event listener to the 'img' to remove the changes of the size
-  img.addEventListener("mouseleave", (event) => {
+  img[i].addEventListener("mouseleave", (event) => {
     event.target.style.transform = "scale(1)"; // Reset scale
   });
-  // creating the 'a' tag
-  const a = document.createElement("a");
-  // adding href to 'a' tag
-  a.href = images[i].original.substring(1, images[i].original.length - 1);
-
-  // adding 'img' to 'a' element.
-  a.append(img);
-  // creating the 'li' element
-  const li = document.createElement("li");
-  // adding 'img' inside the 'a' element as child element
-  li.appendChild(a);
-  // adding 'li' inside the 'ul' as child element
-  gallery.appendChild(li);
 }
 
 gallery.addEventListener("click", imageClick);
@@ -110,7 +102,7 @@ function imageClick(event) {
   event.preventDefault();
   const imageData = event.target;
   const instance = basicLightbox.create(
-    `<img width="1400" height="900" src="${imageData.bigsrc}">`
+    `<img width="1400" height="900" src="${imageData.dataset.source}">`
   );
   if (imageData.tagName === "IMG") {
     instance.show(
